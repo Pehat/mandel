@@ -1,7 +1,8 @@
 class EvenFraction(object):
-    def __init__(self, n=0, logd=0):
+    def __init__(self, n=0, logd=0, max_precision=104):
         self.n = n
         self.logd = logd
+        self.max_precision = max_precision
         
     def __imul__(self, other):
         self.n *= other.n
@@ -14,39 +15,86 @@ class EvenFraction(object):
         return EvenFraction(n, logd)
         
     def __iadd__(self, other):
-        n = (self.n << other.logd) + (other.n << self.logd)
-        logd = other.logd + self.logd
-        while not(n & 1) and (logd):
-            n >>= 1
-            logd -= 1
+        logd = max(other.logd, self.logd)
+        self_shift = logd - self.logd
+        other_shift = logd - other.logd
+        n = (self.n << self_shift) + (other.n << other_shift)
+        
+        testbit = 1
+        shift = 0
+        while not(n & testbit) and (shift < logd):
+            testbit <<= 1
+            shift += 1
+            
+        if (self.max_precision + shift < logd):
+            shift = logd - self.max_precision
+        
+        logd -= shift
+        n >>= shift
+        
         self.n = n
         self.logd = logd
         return self
         
     def __add__(self, other):
-        n = (self.n << other.logd) + (other.n << self.logd)
-        logd = other.logd + self.logd
-        while not(n & 1) and (logd):
-            n >>= 1
-            logd -= 1
+        logd = max(other.logd, self.logd)
+        self_shift = logd - self.logd
+        other_shift = logd - other.logd
+        n = (self.n << self_shift) + (other.n << other_shift)
+        
+        testbit = 1
+        shift = 0
+        while not(n & testbit) and (shift < logd):
+            testbit <<= 1
+            shift += 1
+            
+        if (self.max_precision + shift < logd):
+            shift = logd - self.max_precision
+            
+        logd -= shift
+        n >>= shift
+        
         return EvenFraction(n, logd)
         
     def __isub__(self, other):
-        n = (self.n << other.logd) - (other.n << self.logd)
-        logd = other.logd + self.logd
-        while not(n & 1) and (logd):
-            n >>= 1
-            logd -= 1
+        logd = max(other.logd, self.logd)
+        self_shift = logd - self.logd
+        other_shift = logd - other.logd
+        n = (self.n << self_shift) - (other.n << other_shift)
+        
+        testbit = 1
+        shift = 0
+        while not(n & testbit) and (shift < logd):
+            testbit <<= 1
+            shift += 1
+            
+        if (self.max_precision + shift < logd):
+            shift = logd - self.max_precision
+            
+        logd -= shift
+        n >>= shift
+        
         self.n = n
         self.logd = logd
         return self
         
     def __sub__(self, other):
-        n = (self.n << other.logd) - (other.n << self.logd)
-        logd = other.logd + self.logd
-        while not(n & 1) and (logd):
-            n >>= 1
-            logd -= 1
+        logd = max(other.logd, self.logd)
+        self_shift = logd - self.logd
+        other_shift = logd - other.logd
+        n = (self.n << self_shift) - (other.n << other_shift)
+        
+        testbit = 1
+        shift = 0
+        while not(n & testbit) and (shift < logd):
+            testbit <<= 1
+            shift += 1
+            
+        if (self.max_precision + shift < logd):
+            shift = logd - self.max_precision
+            
+        logd -= shift
+        n >>= shift
         return EvenFraction(n, logd)
         
         
